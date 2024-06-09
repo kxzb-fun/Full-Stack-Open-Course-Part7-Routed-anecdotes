@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import {
   BrowserRouter as Router,
-  Routes, Route, Link
+  Routes, Route, Link, useParams
 } from 'react-router-dom'
 const Menu = () => {
   const padding = {
@@ -15,12 +15,27 @@ const Menu = () => {
     </div>
   )
 }
+const Anecdote  = ( {anecdotes} )=>{
+  const  id = useParams().id
+ let anecdote = {
+
+ }
+  if(id) {
+    anecdote = anecdotes.find(i=>i.id === Number(id))
+  }
+    return <div>
+      <h2>{anecdote.content}</h2>
+      <p>have {anecdote.votes} votes</p>
+    </div>
+}
 
 const AnecdoteList = ({ anecdotes }) => (
   <div>
     <h2>Anecdotes</h2>
     <ul>
-      {anecdotes.map(anecdote => <li key={anecdote.id} >{anecdote.content}</li>)}
+      {anecdotes.map(anecdote => <li key={anecdote.id} >
+        <Link to={`/anecdote/${anecdote.id}`}>{anecdote.content}</Link>
+      </li>)}
     </ul>
   </div>
 )
@@ -134,6 +149,7 @@ const App = () => {
           <Route path="/" element={<AnecdoteList anecdotes={anecdotes} />}></Route>
           <Route path="/about" element={ <About />}></Route>
           <Route path="/create" element={<CreateNew addNew={addNew} />}></Route>
+          <Route path="/anecdote/:id" element={ <Anecdote anecdotes={anecdotes}/>}></Route>
         </Routes>
         <Footer />
       </div>
