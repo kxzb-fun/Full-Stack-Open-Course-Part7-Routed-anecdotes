@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
-
+import { getCountryByName } from './server/index'
 const useField = (type) => {
   const [value, setValue] = useState('')
 
@@ -18,7 +18,29 @@ const useField = (type) => {
 const useCountry = (name) => {
   const [country, setCountry] = useState(null)
 
-  useEffect(() => {})
+  useEffect(() => {
+    if (!name) {
+      setCountry(null)
+      return
+    }
+
+    getCountryByName(name).then(response => {
+      if (response) {
+        console.log(response);
+        const data = {
+          name: response.data.name.common,
+          capital: response.data.capital[0],
+          population: response.data.population,
+          flags:response.data.flags.png,
+        }
+        setCountry({ found: true, data })
+      } else {
+        setCountry({ found: false })
+      }
+    }).catch(error => {
+      setCountry({ found: false })
+    })
+  }, [name])
 
   return country
 }
@@ -35,13 +57,13 @@ const Country = ({ country }) => {
       </div>
     )
   }
-
+  console.log(country);
   return (
     <div>
       <h3>{country.data.name} </h3>
       <div>capital {country.data.capital} </div>
       <div>population {country.data.population}</div> 
-      <img src={country.data.flag} height='100' alt={`flag of ${country.data.name}`}/>  
+      <img src={country.data.flags} height='100' alt={`flag of ${country.data.name}`}/>  
     </div>
   )
 }
